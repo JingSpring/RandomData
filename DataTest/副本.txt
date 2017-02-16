@@ -1,0 +1,100 @@
+package com.xjc.datatest;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.InputStreamReader;
+import java.util.Random;
+
+public class DataTest {
+	
+	public static void main(String[] args) {
+		
+		String filePath = "D:\\array.txt";
+		
+		createNumberIntToFile(filePath);
+		readTxtFile(filePath);
+	}
+	
+	//自行产生 10000 个 0 到 9999 之间的随机数，按照产生的顺序依次把它们存放到一个array.txt文件中。
+	public static void createNumberIntToFile(String filePath) {
+		
+		try {
+			File file = new File(filePath);
+			if(!file.exists()) {
+				file.createNewFile();
+				System.out.println("array.txt文件创建完成");
+			}
+			FileWriter fw = new FileWriter(file);
+			BufferedWriter bw = new BufferedWriter(fw);
+			
+			Random random = new Random();
+			for(int i=0;i<1000;i++) {
+				
+				for(int a=1;a<=10;a++) {
+					//随机产生一个数字
+					int randint = (int)Math.floor((random.nextDouble()*10000.0));
+					//将数字转化为字符型存入array.txt文件中
+					bw.write(String.valueOf(randint)+"\t");
+				}
+				bw.newLine();
+			}
+			bw.close();
+			fw.close();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	//读取一行array.txt文件内容
+	public static void readTxtFile(String filePath) {
+		
+		try {
+			String encoding="GBK";
+			File file=new File(filePath);
+			if(file.isFile() && file.exists()) {
+				InputStreamReader read = new InputStreamReader(new FileInputStream(file),encoding);
+				String lineTxt = null;
+				BufferedReader bufferedReader = new BufferedReader(read);
+				
+				lineTxt = bufferedReader.readLine();
+				String str[] = lineTxt.split("\t");
+				int[] array = new int[str.length];
+				DataListUtils utils = new DataListUtils(str.length);
+				
+				System.out.print("从文件中读出的前"+str.length+"个数为：");
+				for(int a=0;a<str.length;a++) {
+					array[a] = Integer.parseInt(str[a]);
+					System.out.print(array[a] + "\t");
+				}
+				System.out.print("\n");
+				
+				System.out.println("从文件中读出的前"+str.length+"个数插入到有序顺序表中,插入完成后输出顺序表的全部元素：");
+				for(int i=0;i<str.length;i++) {
+					array[i] = Integer.parseInt(str[i]);
+					utils.insert(array[i]);
+					utils.display();
+				}
+				
+				System.out.println("对已经插入数据元素的顺序表，按照表中元素在数据文件中的顺序逐个将元素删除，直到表空：");
+				for(int b=0;b<array.length;b++) {
+					utils.delete(array[b]);
+					System.out.print("删除的元素为："+array[b]);
+					System.out.println();
+					System.out.print("余下元素有：");
+					utils.display();
+				}
+				System.out.println("表为空！！！");
+				read.close();
+			}else{
+				System.out.println("找不到指定文件");
+			}
+		} catch (Exception e) {
+			System.out.println("读取文件出错");
+			e.printStackTrace();
+		}
+	}
+
+}
